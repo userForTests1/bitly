@@ -6,14 +6,6 @@ from dotenv import load_dotenv
 import urllib.parse as urlparse
 
 
-load_dotenv()
-BITLY_APIKEY = os.environ['BITLY_APIKEY']
-HEADERS = {
-    'Authorization': BITLY_APIKEY,
-    'Content-Type': 'application/json',
-}
-
-
 def create_parser():
     parser = argparse.ArgumentParser(
         description='Скрипт для сокращения ссылок через сервис https://bit.ly '
@@ -67,16 +59,18 @@ def count_clicks(url, apikey):
 
 
 def main():
+    load_dotenv()
+    token = os.environ['BITLY_APIKEY']
     parser = create_parser()
     args = parser.parse_args()
     url = args.url
-    need_short = is_bitlink(url, BITLY_APIKEY)
+    need_short = is_bitlink(url, token)
     try:
         if need_short:
-            clicks = count_clicks(url, BITLY_APIKEY)
+            clicks = count_clicks(url, token)
             print(f'По Вашей ссылке перешли: {clicks} раз(а)')
         else:
-            link = shorten_link(url, BITLY_APIKEY)
+            link = shorten_link(url, token)
             print(f'Битлинк: {link}')
     except requests.exceptions.HTTPError as err:
         logging.error(err)
